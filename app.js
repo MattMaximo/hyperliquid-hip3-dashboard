@@ -1,5 +1,6 @@
 const state = {
   range: 90,
+  granularity: "d",
   fullFees: false,
   payload: null,
   charts: {},
@@ -30,6 +31,11 @@ const compactNumber = new Intl.NumberFormat("en-US", {
 const dateFormatter = new Intl.DateTimeFormat("en-US", {
   month: "short",
   day: "numeric",
+  year: "numeric",
+});
+
+const monthFormatter = new Intl.DateTimeFormat("en-US", {
+  month: "short",
   year: "numeric",
 });
 
@@ -65,6 +71,34 @@ function filteredDays() {
   return state.payload.days.slice(-state.range);
 }
 
+function parseDay(value) {
+  return new Date(`${value}T00:00:00`);
+}
+
+function bucketKeyForDate(value, granularity) {
+  const date = parseDay(value);
+  if (granularity === "d") return value;
+  if (granularity === "w") {
+    const day = date.getDay();
+    const diff = (day + 6) % 7;
+    date.setDate(date.getDate() - diff);
+    return date.toISOString().slice(0, 10);
+  }
+  if (granularity === "m") {
+    date.setDate(1);
+    return date.toISOString().slice(0, 10);
+  }
+  return `${date.getFullYear()}-01-01`;
+}
+
+function formatBucketLabel(value, granularity) {
+  const date = parseDay(value);
+  if (granularity === "d") return formatDate(value);
+  if (granularity === "w") return `Wk of ${formatDate(value)}`;
+  if (granularity === "m") return monthFormatter.format(date);
+  return String(date.getFullYear());
+}
+
 function deriveDay(day) {
   const regularFees = day.regular_actual_fees;
   const hip3Fees = state.fullFees ? day.hip3_full_fee_est : day.hip3_actual_fees;
@@ -90,6 +124,39 @@ function deriveDay(day) {
     shown_total_burn: totalBurn,
     shown_hip3_uplift: hip3Fees - day.hip3_actual_fees,
   };
+}
+
+function aggregateRows(rows, granularity) {
+  if (granularity === "d") return rows;
+
+  const buckets = new Map();
+  for (const row of rows) {
+    const key = bucketKeyForDate(row.date, granularity);
+    let bucket = buckets.get(key);
+    if (!bucket) {
+      bucket = {
+        date: key,
+        label: formatBucketLabel(key, granularity),
+        shown_regular_fees: 0,
+        shown_hip3_fees: 0,
+        shown_regular_revenue: 0,
+        shown_hip3_revenue: 0,
+        shown_regular_burn: 0,
+        shown_hip3_burn: 0,
+        shown_hip3_uplift: 0,
+      };
+      buckets.set(key, bucket);
+    }
+    bucket.shown_regular_fees += row.shown_regular_fees;
+    bucket.shown_hip3_fees += row.shown_hip3_fees;
+    bucket.shown_regular_revenue += row.shown_regular_revenue;
+    bucket.shown_hip3_revenue += row.shown_hip3_revenue;
+    bucket.shown_regular_burn += row.shown_regular_burn;
+    bucket.shown_hip3_burn += row.shown_hip3_burn;
+    bucket.shown_hip3_uplift += row.shown_hip3_uplift;
+  }
+
+  return Array.from(buckets.values()).sort((a, b) => a.date.localeCompare(b.date));
 }
 
 function buildKpis() {
@@ -197,8 +264,8 @@ function upsertChart(key, canvasId, config) {
 }
 
 function renderCharts() {
-  const rows = filteredDays().map(deriveDay);
-  const labels = rows.map((row) => formatDate(row.date));
+  const rows = aggregateRows(filteredDays().map(deriveDay), state.granularity);
+  const labels = rows.map((row) => row.label || formatDate(row.date));
 
   upsertChart("fees", "fees-chart", {
     type: "bar",
@@ -273,7 +340,7 @@ function renderCharts() {
       datasets: [
         {
           label: "HIP3 Fee Uplift from Full Fees",
-          data: rows.map((row) => row.hip3_full_fee_est - row.hip3_actual_fees),
+          data: rows.map((row) => row.shown_hip3_uplift),
           backgroundColor: "rgba(255, 107, 44, 0.82)",
           borderRadius: 6,
         },
@@ -347,6 +414,12 @@ function syncSortButtons() {
   });
 }
 
+function syncAggregationButtons() {
+  document.querySelectorAll(".aggregation-picker button").forEach((button) => {
+    button.classList.toggle("is-active", button.dataset.granularity === state.granularity);
+  });
+}
+
 function renderMarkets() {
   const rows = buildCurrentMarkets().sort(compareMarketRows);
   const growthCount = rows.filter((row) => row.growth_active).length;
@@ -399,6 +472,7 @@ function render() {
   buildKpis();
   renderMarkets();
   renderMethodology();
+  syncAggregationButtons();
   renderCharts();
 }
 
@@ -423,6 +497,13 @@ async function init() {
     document
       .querySelectorAll("#range-picker button")
       .forEach((node) => node.classList.toggle("is-active", node === button));
+    render();
+  });
+
+  document.addEventListener("click", (event) => {
+    const button = event.target.closest(".aggregation-picker button");
+    if (!button) return;
+    state.granularity = button.dataset.granularity;
     render();
   });
 

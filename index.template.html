@@ -68,7 +68,15 @@ __DASHBOARD_DATA__
               <p class="eyebrow">Fees</p>
               <h2>Core Hyperliquid vs HIP3 fees</h2>
             </div>
-            <p class="section-note">Exact daily fee aggregates from Allium</p>
+            <div class="section-actions">
+              <p class="section-note">Exact daily fee aggregates from Allium</p>
+              <div class="aggregation-picker" data-aggregation-picker>
+                <button type="button" data-granularity="d" class="is-active">D</button>
+                <button type="button" data-granularity="w">W</button>
+                <button type="button" data-granularity="m">M</button>
+                <button type="button" data-granularity="y">Y</button>
+              </div>
+            </div>
           </div>
           <div class="chart-wrap">
             <canvas id="fees-chart"></canvas>
@@ -81,7 +89,15 @@ __DASHBOARD_DATA__
               <p class="eyebrow">Revenue</p>
               <h2>Estimated protocol revenue split</h2>
             </div>
-            <p class="section-note">Estimated from the fee mix on each day</p>
+            <div class="section-actions">
+              <p class="section-note">Estimated from the fee mix on each day</p>
+              <div class="aggregation-picker" data-aggregation-picker>
+                <button type="button" data-granularity="d" class="is-active">D</button>
+                <button type="button" data-granularity="w">W</button>
+                <button type="button" data-granularity="m">M</button>
+                <button type="button" data-granularity="y">Y</button>
+              </div>
+            </div>
           </div>
           <div class="chart-wrap">
             <canvas id="revenue-chart"></canvas>
@@ -94,7 +110,15 @@ __DASHBOARD_DATA__
               <p class="eyebrow">Burn</p>
               <h2>Estimated Assistance Fund burn split</h2>
             </div>
-            <p class="section-note" id="burn-note">Uses Artemis buyback burn series</p>
+            <div class="section-actions">
+              <p class="section-note" id="burn-note">Uses Artemis buyback burn series</p>
+              <div class="aggregation-picker" data-aggregation-picker>
+                <button type="button" data-granularity="d" class="is-active">D</button>
+                <button type="button" data-granularity="w">W</button>
+                <button type="button" data-granularity="m">M</button>
+                <button type="button" data-granularity="y">Y</button>
+              </div>
+            </div>
           </div>
           <div class="chart-wrap">
             <canvas id="burn-chart"></canvas>
@@ -107,7 +131,15 @@ __DASHBOARD_DATA__
               <p class="eyebrow">HIP3</p>
               <h2>HIP3 fee uplift at full fees</h2>
             </div>
-            <p class="section-note">Estimated uplift if growth-mode discounts were removed</p>
+            <div class="section-actions">
+              <p class="section-note">Estimated uplift if growth-mode discounts were removed</p>
+              <div class="aggregation-picker" data-aggregation-picker>
+                <button type="button" data-granularity="d" class="is-active">D</button>
+                <button type="button" data-granularity="w">W</button>
+                <button type="button" data-granularity="m">M</button>
+                <button type="button" data-granularity="y">Y</button>
+              </div>
+            </div>
           </div>
           <div class="chart-wrap">
             <canvas id="uplift-chart"></canvas>
