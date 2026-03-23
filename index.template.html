@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hyperliquid Fees Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./vendor/chart.umd.min.js" defer></script>
+    <script id="dashboard-data" type="application/json">
+__DASHBOARD_DATA__
+    </script>
+    <script src="./app.js" defer></script>
+  </head>
+  <body>
+    <div class="backdrop backdrop-a"></div>
+    <div class="backdrop backdrop-b"></div>
+    <main class="shell">
+      <section class="hero panel">
+        <div class="hero-copy">
+          <p class="eyebrow">Hyperliquid / HIP3</p>
+          <h1>Daily fees, revenue, and burn with a HIP3 full-fees counterfactual.</h1>
+          <p class="lede">
+            Allium now provides the exact daily fee and volume aggregates in this dashboard. The
+            HIP3 toggle estimates what the fee, revenue, and burn profile would look like if
+            growth-mode HIP3 markets charged full fees instead of the current discounted schedule.
+          </p>
+        </div>
+        <div class="hero-controls">
+          <div class="control-group">
+            <span class="control-label">View</span>
+            <button id="toggle-full-fees" class="toggle" type="button" aria-pressed="false">
+              <span class="toggle-track">
+                <span class="toggle-thumb"></span>
+              </span>
+              <span class="toggle-copy">
+                <strong>Full Fees for HIP3</strong>
+                <small>Off = actual, On = estimated full-fees</small>
+              </span>
+            </button>
+          </div>
+          <div class="control-group">
+            <span class="control-label">Window</span>
+            <div class="range-picker" id="range-picker">
+              <button type="button" data-range="30">30D</button>
+              <button type="button" data-range="90" class="is-active">90D</button>
+              <button type="button" data-range="180">180D</button>
+            </div>
+          </div>
+          <div class="data-stamp">
+            <span>Latest day</span>
+            <strong id="latest-date">-</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="kpis" id="kpis"></section>
+
+      <section class="grid">
+        <article class="panel chart-panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Fees</p>
+              <h2>Core Hyperliquid vs HIP3 fees</h2>
+            </div>
+            <p class="section-note">Exact daily fee aggregates from Allium</p>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="fees-chart"></canvas>
+          </div>
+        </article>
+
+        <article class="panel chart-panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Revenue</p>
+              <h2>Estimated protocol revenue split</h2>
+            </div>
+            <p class="section-note">Estimated from the fee mix on each day</p>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="revenue-chart"></canvas>
+          </div>
+        </article>
+
+        <article class="panel chart-panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Burn</p>
+              <h2>Estimated Assistance Fund burn split</h2>
+            </div>
+            <p class="section-note" id="burn-note">Uses Artemis buyback burn series</p>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="burn-chart"></canvas>
+          </div>
+        </article>
+
+        <article class="panel chart-panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">HIP3</p>
+              <h2>HIP3 fee uplift at full fees</h2>
+            </div>
+            <p class="section-note">Estimated uplift if growth-mode discounts were removed</p>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="uplift-chart"></canvas>
+          </div>
+        </article>
+      </section>
+
+      <section class="market-section">
+        <article class="panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Markets</p>
+              <h2>All current HIP3 markets</h2>
+            </div>
+            <p class="section-note" id="market-note">Includes growth and non-growth markets</p>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th><button class="sort-button" type="button" data-sort-key="display_name">Market</button></th>
+                  <th><button class="sort-button" type="button" data-sort-key="dex">HIP3 Dex</button></th>
+                  <th><button class="sort-button" type="button" data-sort-key="growth_active">Growth Mode</button></th>
+                  <th><button class="sort-button" type="button" data-sort-key="activity_date">Last Active</button></th>
+                  <th><button class="sort-button" type="button" data-sort-key="volume">Volume</button></th>
+                  <th><button class="sort-button" type="button" data-sort-key="actual_fee_est">Actual Fees</button></th>
+                  <th><button class="sort-button" type="button" data-sort-key="full_fee_est">Full-Fee Fees</button></th>
+                  <th><button class="sort-button" type="button" data-sort-key="uplift_est">Fee Uplift</button></th>
+                </tr>
+              </thead>
+              <tbody id="market-table"></tbody>
+            </table>
+          </div>
+        </article>
+      </section>
+
+      <section class="method-section">
+        <article class="panel">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Method</p>
+              <h2>How this is built</h2>
+            </div>
+            <p class="section-note">Exact vs estimated fields</p>
+          </div>
+          <div class="methodology">
+            <div>
+              <h3>Exact</h3>
+              <ul id="exact-list"></ul>
+            </div>
+            <div>
+              <h3>Estimated</h3>
+              <ul id="estimated-list"></ul>
+            </div>
+            <div class="methodology-notes">
+              <h3>Notes</h3>
+              <ul id="notes-list"></ul>
+            </div>
+          </div>
+        </article>
+      </section>
+    </main>
+  </body>
+</html>

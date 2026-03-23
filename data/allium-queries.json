@@ -1,0 +1,14 @@
+{
+  "hype-dash allium hyperliquid overview": {
+    "query_id": "xc3bZCLZoQNwmCd8w9dD",
+    "sql_hash": "c3806aa49b7bc45e81cda47eb66b341c0ed0dfb6453f1f10bec966d05a6efcb6"
+  },
+  "hype-dash allium hyperliquid hip3 market daily": {
+    "query_id": "1uZfqx9jz7beXYQtn71m",
+    "sql_hash": "12eec9b5bb9e564eaad3f1a568b5ded4453739dc6e116da1a74ac3a856c42223"
+  },
+  "hype-dash allium hyperliquid hip3 market latest": {
+    "query_id": "jexLcKqDOGk1X565l500",
+    "sql_hash": "ff0c7d84f1b0b00b9bb86b7ac3db5485714e72d912fdf1cbef8830e3080450ed"
+  }
+}
