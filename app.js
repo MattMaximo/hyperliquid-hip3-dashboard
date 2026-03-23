@@ -122,7 +122,7 @@ function deriveDay(day) {
     shown_regular_burn: totalBurn * regularShare,
     shown_hip3_burn: totalBurn * hip3Share,
     shown_total_burn: totalBurn,
-    shown_hip3_uplift: hip3Fees - day.hip3_actual_fees,
+    shown_hip3_uplift: day.hip3_full_fee_est - day.hip3_actual_fees,
   };
 }
 
