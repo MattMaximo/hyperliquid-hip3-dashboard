@@ -1,7 +1,7 @@
 # Repo Instructions
 
 ## Purpose
-- This repo contains a static Hyperliquid / HIP3 dashboard intended for GitHub Pages.
+- This repo contains a static Hyperliquid / HIP3 dashboard intended for Cloudflare Pages.
 - Data is refreshed locally, then embedded directly into the generated HTML.
 
 ## Refresh Workflow
@@ -31,10 +31,11 @@
 - Some markets can still show `No recent trade` if there is no recent Allium trade row.
 - Revenue and burn splits remain estimated because Allium does not publish those totals directly.
 
-## GitHub Pages
-- Pages is configured from the repository root on `main`.
-- `index.html` in the repo root is the published page.
-- `dist/` is kept as a portable deploy artifact, but GitHub Pages currently serves the root static build.
+## Cloudflare Pages
+- `dist/` is the portable publish artifact.
+- Deploy `dist/` to the `hype-hip3` Cloudflare Pages project.
+- Live site: `https://hype-hip3.pages.dev/`
+- Cloudflare Access protects the live site.
 
 ## Editing Guidance
 - Edit layout/content in `index.template.html`, not the generated `index.html`.
