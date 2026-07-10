@@ -30,14 +30,19 @@ ALLIUM_API_KEY=... .venv/bin/python build_data.py
 
 ## Publish
 
-Push `main` and GitHub Pages serves the static root:
+Deploy the portable `dist/` artifact to Cloudflare Pages:
 
 ```bash
-git -C /Users/mattmaximo/Code/hype-dash push origin main
+npx wrangler pages project create hype-hip3 --production-branch=main
+npx wrangler pages deploy dist --project-name=hype-hip3 --branch=main
 ```
 
 Live site:
-- `https://mattmaximo.github.io/hyperliquid-hip3-dashboard/`
+- `https://hype-hip3.pages.dev/`
+
+Access:
+- Cloudflare Access protects the live site
+- current allowlist includes `matt@pioneerdigital.org`
 
 ## Files
 
